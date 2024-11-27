@@ -1,39 +1,44 @@
 import requests
+
+from requests.auth import HTTPBasicAuth
 import sqlite3
 import json
 
+
 def database():
-    try:
-        db_connection = sqlite3.connect('meteorite_db.db')
-        cursor = db_connection.cursor()
-        query_create_met_data="""CREATE TABLE IF NOT EXISTS meteorite_data(
-                                 name TEXT,
-                                 id INTEGER,
-                                 nametype TEXT,
-                                 recclass TEXT,
-                                 mass TEXT,
-                                 fall TEXT,
-                                 year TEXT,
-                                 reclat TEXT,
-                                 reclong TEXT,
-                                 geolocation TEXT,
-                                 states TEXT,
-                                 countries TEXT);"""
-        cursor.execute(query_create_met_data)
-        results = cursor.fetchall()
+    # try:
+    #     db_connection = sqlite3.connect('candidate.db')
+    #     cursor = db_connection.cursor()
+    #     query_create_can_data = """CREATE TABLE IF NOT EXISTS can_data(
+    #                              name TEXT,
+    #                              email TEXT,
+    #                              DOB TEXT,
+    #                              phone TEXT,
+    #                              field TEXT,
+    #                              graduate TEXT,
+    #                              years TEXT,
+    #                              website TEXT,
+    #                              ;"""
+    #     cursor.execute(query_create_can_data)
+    #     results = cursor.fetchall()
+    #
+    #     query_delete = """"DELETE FROM can_data"""
+    #     cursor.execute(query_delete)
+    # except sqlite3.Error as db_error:
+    #     print(f'A database error: {db_error}')
+    # finally:
+    #     if db_connection:
+    #         db_connection.close()
 
-        query_delete=""""DELETE FROM meteorite_data"""
-        cursor.execute(query_delete)
-    except sqlite3.Error as db_error:
-        print(f'A database error: {db_error}')
-    finally:
-        if db_connection:
-            db_connection.close()
+    with open('secret.txt', 'r') as file:
+        api_key = file.read().strip()
+    candidate_list = call_api(api_key)
+    return candidate_list
 
-def call_api():
-    url = "https://data.nasa.gov/resource/gh4g-9sfh.json"
-    response = requests.get(url)
-
+def call_api(api_key):
+    url = 'https://joeyp96.wufoo.com/forms/employee-complaint-form/entries/json'
+    response = requests.get(url, auth=HTTPBasicAuth(api_key, 'pass'))
+    print(response.status_code)
     if response.status_code == 200:
         data = response.json()
         print(data)
@@ -44,5 +49,5 @@ def call_api():
 
 
 if __name__ == '__main__':
-  meteorite_list=call_api()
-  database()
+    data = database()
+

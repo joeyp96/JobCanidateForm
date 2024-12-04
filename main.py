@@ -1,6 +1,7 @@
 import sqlite3
 import requests
 from requests.auth import HTTPBasicAuth
+import PySimpleGUI as sg
 
 
 def call_api():
@@ -47,6 +48,42 @@ def create_database():
     return conn
 
     # populating table with the data submitted on the forms
+
+
+def guiLayout():
+    layout = [
+        [sg.Text('Job Candidate Filter')],
+        [sg.Multiline(size=(120, 10), key='Candidate Box', disabled=True)],
+        [sg.Button('Apply Filter', size=(20, 2)), sg.Button('EXIT', size=(20, 2))],
+        [sg.Text('Minimum Years of Experience Required: > '),
+         sg.Input(key='min_years_of_experience', size=6)],
+        [sg.Text('College Graduate? (yes/no) > '),
+         sg.Input(key='college_graduate', size=20)],
+        [sg.Text('Field Of Work Required: > '),
+         sg.Input(key='field_of_work', size=20)],
+    ]
+    # Create the Window
+    window = sg.Window('Job Sorter', layout)
+
+    while True:
+        event, values = window.read()
+        if event == sg.WIN_CLOSED or event == 'EXIT':
+            break
+        if event == 'Apply Filter':
+            window['Candidate Box'].update('')
+            window['Candidate Box'].update(fetch_data())
+
+
+def fetch_data():
+    conn = sqlite3.connect("candidates.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM candidates")
+    data = cursor.fetchall()
+    formatted_data = "\n".join([str(row) for row in data])
+    conn.close()
+    return formatted_data
+
+
 def filter_and_insert_data(entries, conn):
     cursor = conn.cursor()
 
@@ -58,7 +95,7 @@ def filter_and_insert_data(entries, conn):
             entry.get('Field7'),  # dob
             entry.get('Field5'),  # phone
             entry.get('Field2'),  # field of work
-            int(entry.get('Field23', 0)), # years of experience
+            int(entry.get('Field23', 0)),  # years of experience
             entry.get('Field31'),  # website
             entry.get('Field3')  # college graduate (y/n)
         )
@@ -78,14 +115,13 @@ def filter_and_insert_data(entries, conn):
 if __name__ == '__main__':
     # fetch data from API
     entries = call_api()
-
+    guiLayout()
     if entries:
         # create the database and table by calling function
         conn = create_database()
 
         # filter and insert data by calling function
         filter_and_insert_data(entries, conn)
-
 
         conn.close()
 

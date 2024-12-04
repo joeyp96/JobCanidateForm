@@ -169,3 +169,4 @@ if __name__ == '__main__':
         print("Data successfully inserted into the database.")
     else:
         print("No data to insert.")
+

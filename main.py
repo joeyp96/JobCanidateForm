@@ -54,7 +54,7 @@ def create_database():
 def guiLayout():
     layout = [
             [sg.Text('Job Candidate Filter')],
-            [sg.Multiline(size=(240, 20), key='Candidate Box', disabled=True)],
+            [sg.Multiline(size=(480, 20), key='Candidate Box', disabled=True)],
             [sg.Button('Apply Filter', size=(20, 2)), sg.Button('EXIT', size=(20, 2))],
             [sg.Text('Minimum Years of Experience Required: > '),
          sg.Input(key='min_years_of_experience', size=6)],
@@ -67,7 +67,7 @@ def guiLayout():
 
     ]
     # Create the Window
-    window = sg.Window('Job Sorter', layout, size=(1280,720))
+    window = sg.Window('Job Sorter', layout, size=(1920, 1080))
 
     while True:
         event, values = window.read()
@@ -75,7 +75,7 @@ def guiLayout():
             break
         if event == 'Apply Filter':
             window['Candidate Box'].update('')
-            window['Candidate Box'].print(f"{'id':<25}{'name':<25}{'email':<50}{'dob':<25}{'#':<25}{'Field of Work':<25}{'Experience':<25}{'Website':<25}{'College':<25}")
+            window['Candidate Box'].print(f"{'name':^50}{'email':^50}{'dob':^50}{'#':^50}{'Field of Work':^50}{'Experience':^50}{'Website':^50}{'College':^50}")
             can_list = []
             try:
                 can_list = fetch_data(int(values["min_years_of_experience"]), values["grad_key"])
@@ -91,9 +91,8 @@ def guiLayout():
                 field_of_work = row[5]
                 experience = int(row[6])
                 website = row[7]
-                college = bool(row[8])
-                window['Candidate Box'].print(f"{id:<25}{name:<25}{email:<50}{birth:<25}{phone_number:<25}{field_of_work:<25}{experience:<25}{website:<25}{college:<25}")
-            #window['Candidate Box'].update(fetch_data())
+                college = row[8]
+                window['Candidate Box'].print(f"{name:^50}{email:^50}{birth:^50}{phone_number:^50}{field_of_work:^50}{experience:^50}{website:^50}{college:^50}")
 
 
 def fetch_data(experience_filter, college_filter):

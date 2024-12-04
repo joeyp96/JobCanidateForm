@@ -45,6 +45,7 @@ def create_database():
         )
     ''')
     conn.commit()
+    cursor.execute("DELETE FROM candidates")
     return conn
 
     # populating table with the data submitted on the forms
@@ -52,18 +53,21 @@ def create_database():
 
 def guiLayout():
     layout = [
-        [sg.Text('Job Candidate Filter')],
-        [sg.Multiline(size=(120, 10), key='Candidate Box', disabled=True)],
-        [sg.Button('Apply Filter', size=(20, 2)), sg.Button('EXIT', size=(20, 2))],
-        [sg.Text('Minimum Years of Experience Required: > '),
+            [sg.Text('Job Candidate Filter')],
+            [sg.Multiline(size=(240, 20), key='Candidate Box', disabled=True)],
+            [sg.Button('Apply Filter', size=(20, 2)), sg.Button('EXIT', size=(20, 2))],
+            [sg.Text('Minimum Years of Experience Required: > '),
          sg.Input(key='min_years_of_experience', size=6)],
-        [sg.Text('College Graduate? (yes/no) > '),
-         sg.Input(key='college_graduate', size=20)],
+        [sg.Text('College Graduate? > '),
+         sg.Combo(['Yes', 'No', 'Both'], default_value='Both', key='grad_key'),
+         #sg.Input(key='college_graduate', size=20)],
+         ],
         [sg.Text('Field Of Work Required: > '),
          sg.Input(key='field_of_work', size=20)],
+
     ]
     # Create the Window
-    window = sg.Window('Job Sorter', layout)
+    window = sg.Window('Job Sorter', layout, size=(1280,720))
 
     while True:
         event, values = window.read()
@@ -71,15 +75,51 @@ def guiLayout():
             break
         if event == 'Apply Filter':
             window['Candidate Box'].update('')
-            window['Candidate Box'].update(fetch_data())
+            window['Candidate Box'].print(f"{'id':<25}{'name':<25}{'email':<50}{'dob':<25}{'#':<25}{'Field of Work':<25}{'Experience':<25}{'Website':<25}{'College':<25}")
+            can_list = []
+            try:
+                can_list = fetch_data(int(values["min_years_of_experience"]), values["grad_key"])
+            except:
+                can_list = fetch_data(0, values["grad_key"])
+
+            for row in can_list:
+                id = int(row[0])
+                name = row[1]
+                email = row[2]
+                birth = row[3]
+                phone_number = row[4]
+                field_of_work = row[5]
+                experience = int(row[6])
+                website = row[7]
+                college = bool(row[8])
+                window['Candidate Box'].print(f"{id:<25}{name:<25}{email:<50}{birth:<25}{phone_number:<25}{field_of_work:<25}{experience:<25}{website:<25}{college:<25}")
+            #window['Candidate Box'].update(fetch_data())
 
 
-def fetch_data():
+def fetch_data(experience_filter, college_filter):
     conn = sqlite3.connect("candidates.db")
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM candidates")
     data = cursor.fetchall()
-    formatted_data = "\n".join([str(row) for row in data])
+    formatted_data = []
+    for row in data:
+        id = int(row[0])
+        name = row[1]
+        email = row[2]
+        birth = row[3]
+        phone_number = row[4]
+        field_of_work = row[5]
+        experience = int(row[6])
+        website = row[7]
+        college = row[8]
+        if college_filter == 'Both':
+            if experience >= experience_filter:
+                candidate = (id, name, email, birth, phone_number, field_of_work, experience, website, college)
+                formatted_data.append(candidate)
+            else:
+                if experience >= experience_filter and college == college_filter:
+                candidate = (id, name, email, birth, phone_number, field_of_work, experience, website, college)
+                formatted_data.append(candidate)
     conn.close()
     return formatted_data
 

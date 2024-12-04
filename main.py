@@ -118,8 +118,8 @@ def fetch_data(experience_filter, college_filter):
                 formatted_data.append(candidate)
             else:
                 if experience >= experience_filter and college == college_filter:
-                candidate = (id, name, email, birth, phone_number, field_of_work, experience, website, college)
-                formatted_data.append(candidate)
+                    candidate = (id, name, email, birth, phone_number, field_of_work, experience, website, college)
+                    formatted_data.append(candidate)
     conn.close()
     return formatted_data
 

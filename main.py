@@ -67,7 +67,7 @@ def guiLayout():
 
     ]
     # Create the Window
-    window = sg.Window('Job Sorter', layout, size=(1920, 1080))
+    window = sg.Window('Job Sorter', layout, size=(1980, 1080))
 
     while True:
         event, values = window.read()
@@ -152,20 +152,23 @@ def filter_and_insert_data(entries, conn):
 
 
 if __name__ == '__main__':
-    # fetch data from API
+    # Fetch data from API
     entries = call_api()
-    guiLayout()
+
     if entries:
-        # create the database and table by calling function
+        # Create the database and table
         conn = create_database()
 
-        # filter and insert data by calling function
+        # Filter and insert data
         filter_and_insert_data(entries, conn)
 
-        conn.close()
-
-        # print statement to verify if db was created successfully
         print("Data successfully inserted into the database.")
     else:
         print("No data to insert.")
+        conn = None  # Handle empty database
 
+    # Run the GUI (pass the connection if needed)
+    guiLayout()
+
+    if conn:
+        conn.close()

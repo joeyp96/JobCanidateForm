@@ -47,7 +47,7 @@ def guiLayout():
     # buttons to run our filters or exit the program.
     layout = [
             [sg.Text('Job Candidate Filter')],
-            [sg.Multiline(size=(480, 20), key='Candidate Box', disabled=True)],
+            [sg.Multiline(size=(480, 20), key='Candidate Box', disabled=True, horizontal_scroll = True,)],
             [sg.Button('Apply Filter', size=(20, 2)), sg.Button('EXIT', size=(20, 2))],
             [sg.Text('Minimum Years of Experience Required: > '),
          sg.Input(key='min_years_of_experience', size=6)],

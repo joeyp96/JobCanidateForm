@@ -52,6 +52,8 @@ def create_database():
 
 
 def guiLayout():
+    # Creates the layout of the GUI, which creates text boxes to display user data and input our filters, as well as
+    # buttons to run our filters or exit the program.
     layout = [
             [sg.Text('Job Candidate Filter')],
             [sg.Multiline(size=(480, 20), key='Candidate Box', disabled=True)],
@@ -61,8 +63,6 @@ def guiLayout():
         [sg.Text('College Graduate? > '),
          sg.Combo(['Yes', 'No', 'Both'], default_value='Both', key='grad_key'),
          ],
-        [sg.Text('Field Of Work Required: > '),
-         sg.Input(key='field_of_work', size=20)],
 
     ]
     # Create the Window
@@ -95,6 +95,7 @@ def guiLayout():
 
 
 def fetch_data(experience_filter, college_filter):
+    # Connect to the database and use the candidate information to create a list using fetchall.
     conn = sqlite3.connect("candidates.db")
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM candidates")
@@ -167,4 +168,3 @@ if __name__ == '__main__':
         print("Data successfully inserted into the database.")
     else:
         print("No data to insert.")
-

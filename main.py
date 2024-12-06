@@ -74,7 +74,8 @@ def guiLayout():
             break
         if event == 'Apply Filter':
             window['Candidate Box'].update('')
-            window['Candidate Box'].print(f"{'name':^40}{'email':^40}{'dob':^40}{'#':^40}{'Field of Work':^40}{'Experience':^40}{'Website':^40}{'College':^40}")
+            window['Candidate Box'].print(f"{'name':<40}{'email':<40}{'dob':<40}{'#':<40}{'Field of Work':<40}{'Experience':<40}{'Website':<40}{'College':<40}")
+            #Used to clear the output then print a header across the top including candidate attributes.
             can_list = []
             try:
                 can_list = fetch_data(int(values["min_years_of_experience"]), values["grad_key"])
@@ -91,8 +92,8 @@ def guiLayout():
                 experience = int(row[6])
                 website = row[7]
                 college = row[8]
-                window['Candidate Box'].print(f"{name:^40}{email:^40}{birth:^40}{phone_number:^40}{field_of_work:^40}{experience:^40}{website:^40}{college:^40}")
-
+                window['Candidate Box'].print(f"{name:<40}{email:<40}{birth:<40}{phone_number:<40}{field_of_work:<40}{experience:<40}{website:<40}{college:<40}")
+                # Taking the candidate list that was populated by fetch_data and prints out each attribute with spacing.
 
 def fetch_data(experience_filter, college_filter):
     conn = sqlite3.connect("candidates.db")
@@ -101,6 +102,7 @@ def fetch_data(experience_filter, college_filter):
     data = cursor.fetchall()
     formatted_data = []
     for row in data:
+        # Grabs data from sqlite database and formats it into a tuple to be stored into a list.
         id = int(row[0])
         name = row[1]
         email = row[2]
@@ -111,11 +113,13 @@ def fetch_data(experience_filter, college_filter):
         website = row[7]
         college = row[8]
         if college_filter == 'Both':
+            # To allow the college graduate filter to work in both removing the option to filter in this statement.
             if experience >= experience_filter:
                 candidate = (id, name, email, birth, phone_number, field_of_work, experience, website, college)
                 formatted_data.append(candidate)
         else:
             if experience >= experience_filter and college == college_filter:
+                # If college experience filter is set to any option besides 'Both', this statement will choose the filter.
                 candidate = (id, name, email, birth, phone_number, field_of_work, experience, website, college)
                 formatted_data.append(candidate)
     conn.close()

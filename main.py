@@ -52,9 +52,6 @@ def create_database():
 
 
 def guiLayout():
-
-    # creates the layout of the GUI, creates text boxes to input the filter data and buttons to either run the
-    # filters or exit the program.
     layout = [
             [sg.Text('Job Candidate Filter')],
             [sg.Multiline(size=(480, 20), key='Candidate Box', disabled=True)],
@@ -64,6 +61,8 @@ def guiLayout():
         [sg.Text('College Graduate? > '),
          sg.Combo(['Yes', 'No', 'Both'], default_value='Both', key='grad_key'),
          ],
+        [sg.Text('Field Of Work Required: > '),
+         sg.Input(key='field_of_work', size=20)],
 
     ]
     # Create the Window
@@ -75,7 +74,7 @@ def guiLayout():
             break
         if event == 'Apply Filter':
             window['Candidate Box'].update('')
-            window['Candidate Box'].print(f"{'name':^35}{'email':^35}{'dob':^35}{'#':^35}{'Field of Work':^35}{'Experience':^35}{'Website':^35}{'College':^35}")
+            window['Candidate Box'].print(f"{'name':^40}{'email':^40}{'dob':^40}{'#':^40}{'Field of Work':^40}{'Experience':^40}{'Website':^40}{'College':^40}")
             can_list = []
             try:
                 can_list = fetch_data(int(values["min_years_of_experience"]), values["grad_key"])
@@ -92,11 +91,10 @@ def guiLayout():
                 experience = int(row[6])
                 website = row[7]
                 college = row[8]
-                window['Candidate Box'].print(f"{name:^35}{email:^35}{birth:^35}{phone_number:^35}{field_of_work:^35}{experience:^35}{website:^35}{college:^35}")
+                window['Candidate Box'].print(f"{name:^40}{email:^40}{birth:^40}{phone_number:^40}{field_of_work:^40}{experience:^40}{website:^40}{college:^40}")
 
 
 def fetch_data(experience_filter, college_filter):
-    # Connect to the database and create a list of the data using a fetchall request.
     conn = sqlite3.connect("candidates.db")
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM candidates")

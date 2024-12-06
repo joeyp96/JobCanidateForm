@@ -60,14 +60,13 @@ def guiLayout():
          sg.Input(key='min_years_of_experience', size=6)],
         [sg.Text('College Graduate? > '),
          sg.Combo(['Yes', 'No', 'Both'], default_value='Both', key='grad_key'),
-         #sg.Input(key='college_graduate', size=20)],
          ],
         [sg.Text('Field Of Work Required: > '),
          sg.Input(key='field_of_work', size=20)],
 
     ]
     # Create the Window
-    window = sg.Window('Job Sorter', layout, size=(1980, 1080))
+    window = sg.Window('Job Sorter', layout, size=(1280, 720))
 
     while True:
         event, values = window.read()
@@ -75,7 +74,7 @@ def guiLayout():
             break
         if event == 'Apply Filter':
             window['Candidate Box'].update('')
-            window['Candidate Box'].print(f"{'name':^50}{'email':^50}{'dob':^50}{'#':^50}{'Field of Work':^50}{'Experience':^50}{'Website':^50}{'College':^50}")
+            window['Candidate Box'].print(f"{'name':^40}{'email':^40}{'dob':^40}{'#':^40}{'Field of Work':^40}{'Experience':^40}{'Website':^40}{'College':^40}")
             can_list = []
             try:
                 can_list = fetch_data(int(values["min_years_of_experience"]), values["grad_key"])
@@ -92,7 +91,7 @@ def guiLayout():
                 experience = int(row[6])
                 website = row[7]
                 college = row[8]
-                window['Candidate Box'].print(f"{name:^50}{email:^50}{birth:^50}{phone_number:^50}{field_of_work:^50}{experience:^50}{website:^50}{college:^50}")
+                window['Candidate Box'].print(f"{name:^40}{email:^40}{birth:^40}{phone_number:^40}{field_of_work:^40}{experience:^40}{website:^40}{college:^40}")
 
 
 def fetch_data(experience_filter, college_filter):
@@ -115,10 +114,10 @@ def fetch_data(experience_filter, college_filter):
             if experience >= experience_filter:
                 candidate = (id, name, email, birth, phone_number, field_of_work, experience, website, college)
                 formatted_data.append(candidate)
-            else:
-                if experience >= experience_filter and college == college_filter:
-                    candidate = (id, name, email, birth, phone_number, field_of_work, experience, website, college)
-                    formatted_data.append(candidate)
+        else:
+            if experience >= experience_filter and college == college_filter:
+                candidate = (id, name, email, birth, phone_number, field_of_work, experience, website, college)
+                formatted_data.append(candidate)
     conn.close()
     return formatted_data
 
@@ -152,23 +151,20 @@ def filter_and_insert_data(entries, conn):
 
 
 if __name__ == '__main__':
-    # Fetch data from API
+    # fetch data from API
     entries = call_api()
-
+    guiLayout()
     if entries:
-        # Create the database and table
+        # create the database and table by calling function
         conn = create_database()
 
-        # Filter and insert data
+        # filter and insert data by calling function
         filter_and_insert_data(entries, conn)
 
+        conn.close()
+
+        # print statement to verify if db was created successfully
         print("Data successfully inserted into the database.")
     else:
         print("No data to insert.")
-        conn = None  # Handle empty database
 
-    # Run the GUI (pass the connection if needed)
-    guiLayout()
-
-    if conn:
-        conn.close()
